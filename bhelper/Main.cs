@@ -49,24 +49,29 @@ namespace bhelper
             return false;
         }
 
-        private static string GetMainVersion(bool ConsoleVersion)
+        /// <summary>
+        /// Get the github version string
+        /// either for the Graphical or Console Client
+        /// </summary>
+        /// <param name="isConsoleVersion"></param>
+        /// <returns></returns>
+        private static string GetMainVersion(bool isConsoleVersion)
         {
-            if (ConsoleVersion)
+            using (var wC = new WebClient())
             {
-                using (var wC = new WebClient())
+                if (isConsoleVersion)
+                {
                     return
                         wC.DownloadString(
                             "https://raw.githubusercontent.com/Sen66/PokemonGo-Bot/master/ConsoleClient/Properties/AssemblyInfo.cs");
-            }
-            else
-            {
-                using (var wC = new WebClient())
+                }
+                else
+                {
                     return
                         wC.DownloadString(
-                             "https://raw.githubusercontent.com/Sen66/PokemonGo-Bot/master/GraphicalClient/Properties/AssemblyInfo.cs");
+                            "https://raw.githubusercontent.com/Sen66/PokemonGo-Bot/master/GraphicalClient/Properties/AssemblyInfo.cs");
+                }
             }
-
-            return string.Empty;
         }
 
         public static void ColoredConsoleWrite(ConsoleColor color, string text)
