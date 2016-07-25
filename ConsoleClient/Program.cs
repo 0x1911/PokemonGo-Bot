@@ -22,7 +22,7 @@ namespace PokemonGo.RocketAPI.Console
 
             try
             {
-                bhelper.Main.CheckVersion(Assembly.GetExecutingAssembly().GetName());
+                bhelper.Main.CheckVersion(Assembly.GetExecutingAssembly().GetName(), true);
 
                 if (_hero.ClientSettings.AuthType == AuthType.Ptc)
                     await _hero.Client.DoPtcLogin(_hero.ClientSettings.PtcUsername, _hero.ClientSettings.PtcPassword);
@@ -94,7 +94,7 @@ namespace PokemonGo.RocketAPI.Console
                 try
                 {
                     //if we are on the newest version we should be fine running the bot
-                    if (bhelper.Main.CheckVersion(Assembly.GetExecutingAssembly().GetName()))
+                    if (bhelper.Main.CheckVersion(Assembly.GetExecutingAssembly().GetName(), true))
                     {
                         Program._hero.AllowedToRun = true;
                     }

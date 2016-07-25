@@ -76,7 +76,7 @@ namespace PokemonGo.RocketAPI.GUI
                 try
                 {
                     //if we are on the newest version we should be fine running the bot
-                    if (bhelper.Main.CheckVersion(Assembly.GetExecutingAssembly().GetName()))
+                    if (bhelper.Main.CheckVersion(Assembly.GetExecutingAssembly().GetName(), false))
                     {
                         Program._hero.AllowedToRun = true;
                     }

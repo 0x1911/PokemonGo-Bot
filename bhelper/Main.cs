@@ -12,13 +12,13 @@ namespace bhelper
 {
     public static class Main
     {
-        public static bool CheckVersion(AssemblyName localAssembly)
+        public static bool CheckVersion(AssemblyName localAssembly, bool isConsoleVersion)
         {
             try
             {
                 var downloadedVersionRegex =
                     new Regex( @"\[assembly\: AssemblyVersion\(""(\d{1,})\.(\d{1,})\.(\d{1,})\.(\d{1,})""\)\]")
-                        .Match(GetMainVersion());
+                        .Match(GetMainVersion(isConsoleVersion));
 
                 if (!downloadedVersionRegex.Success)
                     return false;
@@ -40,21 +40,33 @@ namespace bhelper
 
                 ColoredConsoleWrite(ConsoleColor.Red, "There is a new Version available: " + cleanedServerAssemblyVersion);
             }
-            catch (Exception)
+            catch (Exception crap)
             {
-                ColoredConsoleWrite(ConsoleColor.Red, "Unable to check for updates now...");
+                ColoredConsoleWrite(ConsoleColor.Red, "Unable to check for updates: " + crap.Message);
                 return false;
             }
 
             return false;
         }
 
-        private static string GetMainVersion()
+        private static string GetMainVersion(bool ConsoleVersion)
         {
-            using (var wC = new WebClient())
-                return
-                    wC.DownloadString(
-                        "https://raw.githubusercontent.com/Sen66/PokemonGo-Bot/master/PokemonGo/RocketAPI/Console/Properties/AssemblyInfo.cs");
+            if (ConsoleVersion)
+            {
+                using (var wC = new WebClient())
+                    return
+                        wC.DownloadString(
+                            "https://raw.githubusercontent.com/Sen66/PokemonGo-Bot/master/ConsoleClient/Properties/AssemblyInfo.cs");
+            }
+            else
+            {
+                using (var wC = new WebClient())
+                    return
+                        wC.DownloadString(
+                             "https://raw.githubusercontent.com/Sen66/PokemonGo-Bot/master/GraphicalClient/Properties/AssemblyInfo.cs");
+            }
+
+            return string.Empty;
         }
 
         public static void ColoredConsoleWrite(ConsoleColor color, string text)

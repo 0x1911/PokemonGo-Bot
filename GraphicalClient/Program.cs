@@ -22,7 +22,7 @@ namespace PokemonGo.RocketAPI.GUI
 
             try
             {
-                bhelper.Main.CheckVersion(Assembly.GetExecutingAssembly().GetName());
+                bhelper.Main.CheckVersion(Assembly.GetExecutingAssembly().GetName(), false);
                 if (_hero.ClientSettings.AuthType == AuthType.Ptc)
                     await _hero.Client.DoPtcLogin(_hero.ClientSettings.PtcUsername, _hero.ClientSettings.PtcPassword);
                 else if (_hero.ClientSettings.AuthType == AuthType.Google)
