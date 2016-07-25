@@ -6,17 +6,26 @@ using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.GeneratedCode;
 
 namespace bLogic
-{
+{ 
+    /// <summary>
+    /// Methods in here are in general printing some kind of information either to a text object or the console
+    /// </summary>
     public static class Info
     {
-        public static void AddTOtalExperience(Hero hero, Int32 xp)
+        public static void AddToTotalExeperience(Hero hero, Int32 xp)
         {
             hero.TotalExperience += xp;
         }
+
         public static Int32 GetTotalExperience(Hero hero)
         {
             return hero.TotalExperience;
         }
+
+        public static void PrintMostValuablePokemons(Hero hero)
+        {
+        }
+
         public static bool PrintStartUp(Hero hero, GetPlayerResponse profileResponse)
         {
             try
@@ -43,6 +52,8 @@ namespace bLogic
             return true;
         }
 
+        //todo: remove/replace the bool below
+        public static bool PerfectionListPrinted;
         /// <summary>
         /// Print a level related event to RichTextBox or console log
         /// </summary>
@@ -50,6 +61,12 @@ namespace bLogic
         /// <returns></returns>
         public static async Task PrintLevel(Hero hero)
         {
+            if (!PerfectionListPrinted)
+            {
+                PerfectionListPrinted = true;
+                await bLogic.Pokemon.GetMostValueablePokemonsOwned(hero);
+            }
+
             var inventory = await hero.Client.GetInventory();
             var stats = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PlayerStats).ToArray();
             foreach (var v in stats)

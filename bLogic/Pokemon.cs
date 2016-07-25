@@ -23,6 +23,50 @@ namespace bLogic
 
         public static int TotalExperience = 0;
         public static int TotalPokemon = 0;
+
+        /// <summary>
+        /// Calculate pokemon perfection in percent
+        /// </summary>
+        /// <param name="poke"></param>
+        /// <returns>30</returns>
+        public static float CalculatePokemonPerfection(PokemonData poke)
+        {
+            return (((poke.IndividualAttack * 2 + poke.IndividualDefense + poke.IndividualStamina) / 60f) * 100f);
+        }
+
+
+        public static async Task GetMostValueablePokemonsOwned(Hero hero)
+        {
+            var inventory = await hero.Client.GetInventory();
+            var pokemons = inventory.InventoryDelta.InventoryItems
+                .Select(i => i.InventoryItemData?.Pokemon)
+                .Where(p => p != null && p?.PokemonId > 0)
+                .ToArray();
+
+            //clean up so we dont end up with dupes
+            hero.OwnedPokemons.Clear();
+            //readd our knowledge
+            foreach (var tmpPokemon in pokemons)
+            {
+                bhelper.Classes.Pokemon tmpOwnedPokemon = new bhelper.Classes.Pokemon(tmpPokemon,
+                    CalculatePokemonPerfection(tmpPokemon));
+
+                hero.OwnedPokemons.Add(tmpOwnedPokemon);
+            }
+            //iterate through it TODO: remove debug stuff
+            Console.WriteLine(" We do own {0} pokemon in total", hero.OwnedPokemons.Count+1);
+            var sortedList = hero.OwnedPokemons.OrderByDescending(q => q.PerfectionPercent).ToList();
+            Console.WriteLine("| Name            | Perfect % | Combat Points |");
+            Console.WriteLine("+-----------------+-----------+---------------+");
+            foreach (var pokemon in sortedList)
+            {
+                //String.Format("{0:0.00} degree", hero.ClientSettings.DefaultLongitude)
+                Console.WriteLine("| {0} | {1} | {2} |", pokemon.Pokemondata.PokemonId.ToString().PadRight(15), String.Format("{0:0.00} %", pokemon.PerfectionPercent).PadRight(9), (pokemon.Pokemondata.Cp + " CP").ToString().PadRight(13));
+            }
+            Console.WriteLine("+-----------------+-----------+---------------+");
+        }
+
+
         public static async Task EvolveAllGivenPokemons(Hero hero, IEnumerable<PokemonData> pokemonToEvolve)
         {
             foreach (var pokemon in pokemonToEvolve)
@@ -134,14 +178,21 @@ namespace bLogic
                 else
                     bhelper.Main.ColoredConsoleWrite(ConsoleColor.Red, $"[{DateTime.Now.ToString("HH:mm:ss")}] {pokemonName} with {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} CP got away..");
                 
-                if (hero.ClientSettings.TransferType == "leaveStrongest")
-                    await TransferAllButStrongestUnwantedPokemon(hero);
-                else if (hero.ClientSettings.TransferType == "all")
-                    await TransferAllGivenPokemons(hero, pokemons2);
-                else if (hero.ClientSettings.TransferType == "duplicate")
-                    await TransferDuplicatePokemon(hero);
-                else if (hero.ClientSettings.TransferType == "cp")
-                    await TransferAllWeakPokemon(hero); 
+                switch (hero.ClientSettings.TransferType)
+                {
+                    case "leaveStrongest":
+                        await TransferAllButStrongestUnwantedPokemon(hero);
+                        break;
+                    case "all":
+                        await TransferAllGivenPokemons(hero, pokemons2);
+                        break;
+                    case "duplicate":
+                        await TransferDuplicatePokemon(hero);
+                        break;
+                    case "cp":
+                        await TransferAllWeakPokemon(hero);
+                        break;
+                } 
 
                 await Task.Delay(3000);
             }
@@ -336,34 +387,39 @@ namespace bLogic
             }
         }
 
+        /// <summary>
+        /// transfer duplicate pokemons to the doctor.
+        /// For what ever he is doing with them (?)
+        /// </summary>
+        /// <param name="hero"></param>
         public static async Task TransferDuplicatePokemon(Hero hero)
         {
-            //ColoredConsoleWrite(ConsoleColor.White, $"Check for duplicates");
             var inventory = await hero.Client.GetInventory();
             var allpokemons =
                 inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon)
                     .Where(p => p != null && p?.PokemonId > 0);
 
-            var dupes = allpokemons.OrderBy(x => x.Cp).Select((x, i) => new { index = i, value = x })
+            var DupedPokemon = allpokemons.OrderBy(x => x.Cp).Select((x, i) => new { index = i, value = x })
                 .GroupBy(x => x.value.PokemonId)
                 .Where(x => x.Skip(1).Any());
 
-            for (var i = 0; i < dupes.Count(); i++)
+            for (var i = 0; i < DupedPokemon.Count(); i++)
             {
-                for (var j = 0; j < dupes.ElementAt(i).Count() - 1; j++)
+                for (var j = 0; j < DupedPokemon.ElementAt(i).Count() - 1; j++)
                 {
-                    var dubpokemon = dupes.ElementAt(i).ElementAt(j).value;
-                    if (dubpokemon.Favorite == 0)
+                    var tmpDupePokemon = DupedPokemon.ElementAt(i).ElementAt(j).value;
+                    if (tmpDupePokemon.Favorite == 0)
                     {
-                        var transfer = await hero.Client.TransferPokemon(dubpokemon.Id);
+                        var transfer = await hero.Client.TransferPokemon(tmpDupePokemon.Id);
                         string pokemonName;
                         if (hero.ClientSettings.Language == "german")
-                            pokemonName = Convert.ToString((PokemonId_german)(int)dubpokemon.PokemonId);
+                            pokemonName = Convert.ToString((PokemonId_german)(int)tmpDupePokemon.PokemonId);
                         else
-                            pokemonName = Convert.ToString(dubpokemon.PokemonId);
+                            pokemonName = Convert.ToString(tmpDupePokemon.PokemonId);
                         bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGreen,
-                            $"[{DateTime.Now.ToString("HH:mm:ss")}] Transferred {pokemonName} with {dubpokemon.Cp} CP (Highest is {dupes.ElementAt(i).Last().value.Cp})");
-
+                            $"[{DateTime.Now.ToString("HH:mm:ss")}] Transferred " + pokemonName + ": " + (tmpDupePokemon.Cp + " CP ").ToString().PadRight(7) + String.Format("| {0:0.00}% perfection", CalculatePokemonPerfection(tmpDupePokemon)));
+                        bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGreen,
+                            $"[{DateTime.Now.ToString("HH:mm:ss")}] -We possess " + pokemonName + ": " + (DupedPokemon.ElementAt(i).Last().value.Cp + " CP").ToString().PadRight(7) + String.Format("| {0:0.00}% perfection", CalculatePokemonPerfection(DupedPokemon.ElementAt(i).Last().value)) );
                     }
                 }
             }

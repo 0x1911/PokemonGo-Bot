@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using bhelper.Classes;
 using PokemonGo.RocketAPI;
 
 namespace bhelper
@@ -9,10 +11,10 @@ namespace bhelper
         public Client Client { get; set; }
         public int Currentlevel { get; set; }
         public int TotalExperience { get; set; }
-        public int TotalPokemon { get; set; }
         public double TotalKmWalked { get; set; }
         public DateTime TimeStarted { get; set; }
         public bool AllowedToRun { get; set; }
+        public List<bhelper.Classes.Pokemon> OwnedPokemons { get; set; }
 
         public Hero(Client client)
         {
@@ -21,10 +23,11 @@ namespace bhelper
 
             Currentlevel = -1;
             TotalExperience = 0;
-            TotalPokemon = 0;
             TotalKmWalked = 0;
             TimeStarted = DateTime.Now;
             AllowedToRun = true;
+
+            OwnedPokemons = new List<Pokemon>();
 
         }
     }
