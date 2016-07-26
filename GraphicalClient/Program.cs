@@ -44,20 +44,27 @@ namespace PokemonGo.RocketAPI.GUI
 
                 bLogic.Info.PrintStartUp(_hero, profile);
                 
-                if (_hero.ClientSettings.TransferType == "leaveStrongest")
-                    await bLogic.Pokemon.TransferAllButStrongestUnwantedPokemon(_hero);
-                else if (_hero.ClientSettings.TransferType == "all")
-                    await bLogic.Pokemon.TransferAllGivenPokemons(_hero, pokemons);
-                else if (_hero.ClientSettings.TransferType == "duplicate")
-                    await bLogic.Pokemon.TransferDuplicatePokemon(_hero);
-                else if (_hero.ClientSettings.TransferType == "cp")
-                    await bLogic.Pokemon.TransferAllWeakPokemon(_hero);
-                else
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, $"[{DateTime.Now.ToString("HH:mm:ss")}] Transfering pokemon disabled");
+                switch (_hero.ClientSettings.TransferType)
+                {
+                    case "leaveStrongest":
+                        await bLogic.Pokemon.TransferAllButStrongestUnwantedPokemon(_hero);
+                        break;
+                    case "all":
+                        await bLogic.Pokemon.TransferAllGivenPokemons(_hero, pokemons);
+                        break;
+                    case "duplicate":
+                        await bLogic.Pokemon.TransferDuplicatePokemon(_hero);
+                        break;
+                    case "cp":
+                        await bLogic.Pokemon.TransferAllWeakPokemon(_hero);
+                        break;
+                    default:
+                        bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, $"[{DateTime.Now.ToString("HH:mm:ss")}] Transfering pokemon disabled");
+                        break;
+                }
+
                 if (_hero.ClientSettings.EvolveAllGivenPokemons)
                     await bLogic.Pokemon.EvolveAllGivenPokemons(_hero, pokemons);
-                if (_hero.ClientSettings.Recycler)
-                    _hero.Client.RecycleItems(_hero.Client);
                 
                 await Task.Delay(5000);
                 //time for some gui updates

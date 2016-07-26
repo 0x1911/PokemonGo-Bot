@@ -231,25 +231,47 @@ namespace bLogic
 
             foreach (var pokeStop in pokeStops)
             {
+                if (!pokeStop.Enabled)
+                    continue;
+
                 var update = await _hero.Client.UpdatePlayerLocation(pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await _hero.Client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
                 var fortSearch = await _hero.Client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                 StringWriter PokeStopOutput = new StringWriter();
                 PokeStopOutput.Write($"[{DateTime.Now.ToString("HH:mm:ss")}] ");
-                if (fortInfo.Name != String.Empty)
-                    PokeStopOutput.Write("PokeStop: " + fortInfo.Name);
-                if (fortSearch.ExperienceAwarded != 0)
-                    PokeStopOutput.Write($", XP: {fortSearch.ExperienceAwarded}");
-                if (fortSearch.GemsAwarded != 0)
-                    PokeStopOutput.Write($", Gems: {fortSearch.GemsAwarded}");
-                if (fortSearch.PokemonDataEgg != null)
-                    PokeStopOutput.Write($", Eggs: {fortSearch.PokemonDataEgg}");
 
+                if (fortInfo == null)
+                {
+                    continue;
+                }
+
+                if (fortInfo.Name != string.Empty)
+                {
+
+                    PokeStopOutput.Write("PokeStop: {0}", fortInfo.Name);
+                }
+                    
+
+                if (fortSearch.ExperienceAwarded > 0)
+                {
+                    PokeStopOutput.Write(" | {0} XP", fortSearch.ExperienceAwarded);
+                }
+
+                if (fortSearch.GemsAwarded > 0)
+                {
+                    PokeStopOutput.Write(" | {0} Gems", fortSearch.GemsAwarded);
+                }
+                    
+                if (fortSearch.PokemonDataEgg != null)
+                {
+                    PokeStopOutput.Write(" | Egg received!");
+                }
+                   
                 string FriendlyItems = Item.GetFriendlyItemsString(fortSearch.ItemsAwarded, _hero);
                 if (FriendlyItems != string.Empty)
                 {
-                    PokeStopOutput.Write($", Items:" + FriendlyItems);
+                    PokeStopOutput.Write(" | Items: " + FriendlyItems);
                 }
 
                 Main.ColoredConsoleWrite(ConsoleColor.Cyan, PokeStopOutput.ToString());

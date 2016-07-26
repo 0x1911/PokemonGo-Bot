@@ -442,10 +442,8 @@ namespace PokemonGo.RocketAPI
             {
                 var transfer = await RecycleItem((AllEnum.ItemId)item.Item_, item.Count);
                 ColoredConsoleWrite(ConsoleColor.DarkCyan, $"[{DateTime.Now.ToString("HH:mm:ss")}] Recycled {item.Count}x {((AllEnum.ItemId)item.Item_).ToString().Substring(4)}");
-                await Task.Delay(500);
+                await Task.Delay(_settings.RecycleItemsInterval * 1000);
             }
-            await Task.Delay(_settings.RecycleItemsInterval * 1000);
-            RecycleItems(client);
         }
 
         public async Task<Response.Types.Unknown6> RecycleItem(AllEnum.ItemId itemId, int amount)

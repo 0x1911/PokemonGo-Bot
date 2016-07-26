@@ -110,6 +110,8 @@ namespace PokemonGo.RocketAPI.Console
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
+            System.Console.OutputEncoding = System.Text.Encoding.Unicode;
+
             Task.Run(() =>
             {
                 try
