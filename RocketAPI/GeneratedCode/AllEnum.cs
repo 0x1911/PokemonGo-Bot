@@ -1835,10 +1835,8 @@ namespace AllEnum
         Food = 6,
         [pbr::OriginalName("ITEM_TYPE_CAMERA")]
         Camera = 801,
-        [pbr::OriginalName("ITEM_TROY_DISK")]
-        Disk = 501,
         [pbr::OriginalName("ITEM_INCUBATOR_BASIC_UNLIMITED")]
-        IncubatorUnbreakableOrCamera = 901,
+        IncubatorUnbreakable = 901,
         [pbr::OriginalName("ITEM_INCUBATOR_BASIC")]
         Incubator = 902,
         [pbr::OriginalName("ITEM_TYPE_INCENSE")]
