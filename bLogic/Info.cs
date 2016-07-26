@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using bhelper;
+using bhelper.Classes;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.GeneratedCode;
 
@@ -37,6 +38,8 @@ namespace bLogic
                 }
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " User Name: " + profileResponse.Profile.Username);
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Team: " + profileResponse.Profile.Team);
+                if (profileResponse.Profile.Currency.ToArray()[0].Amount > 0)
+                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Pokecoins: " + profileResponse.Profile.Currency.ToArray()[0].Amount);
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Stardust: " + profileResponse.Profile.Currency.ToArray()[1].Amount);
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Distance traveled: " + String.Format("{0:0.00} km", hero.TotalKmWalked));
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Latitude: " + String.Format("{0:0.00} degree", hero.ClientSettings.DefaultLatitude));

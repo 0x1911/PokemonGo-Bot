@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using bhelper.Classes;
 using PokemonGo.RocketAPI;
 
-namespace bhelper
+namespace bhelper.Classes
 {
     public struct Hero
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using bhelper;
+using bhelper.Classes;
 using PokemonGo.RocketAPI.GeneratedCode;
 
 namespace bLogic

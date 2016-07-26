@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
 using bhelper;
+using bhelper.Classes;
 
 namespace PokemonGo.RocketAPI.Console
 {
     internal class Program
     {
-        public static bhelper.Hero _hero;
+        public static Hero _hero;
         
         private static async void Execute()
         {
@@ -108,6 +109,10 @@ namespace PokemonGo.RocketAPI.Console
                 catch (PtcOfflineException)
                 {
                     bhelper.Main.ColoredConsoleWrite(ConsoleColor.Red, "PTC Servers are probably down OR your credentials are wrong. Try google");
+                }
+                catch (System.ArgumentNullException ex)
+                {
+                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.Red, $"[{DateTime.Now.ToString("HH:mm:ss")}] Unhandled exception: {ex}");
                 }
                 catch (Exception ex)
                 {

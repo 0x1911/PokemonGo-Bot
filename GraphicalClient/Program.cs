@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using bhelper.Classes;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
 
@@ -10,7 +11,7 @@ namespace PokemonGo.RocketAPI.GUI
 {
     internal class Program
     {
-        public static bhelper.Hero _hero;
+        public static Hero _hero;
         
         public static async void Execute()
         {

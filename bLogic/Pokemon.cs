@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AllEnum;
 using bhelper;
+using bhelper.Classes;
 using PokemonGo.RocketAPI;
 using PokemonGo.RocketAPI.Extensions;
 using PokemonGo.RocketAPI.GeneratedCode;
