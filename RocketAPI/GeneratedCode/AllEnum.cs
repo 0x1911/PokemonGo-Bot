@@ -1803,10 +1803,12 @@ namespace AllEnum
         None = 0,
         [pbr::OriginalName("ITEM_TYPE_POKEBALL")]
         Pokeball = 1,
-        [pbr::OriginalName("ITEM_TYPE_POTION")]
-        Potion = 2,
+        [pbr::OriginalName("ITEM_TYPE_GREAT_POKEBALL")]
+        GreatPokeball = 2,
+        [pbr::OriginalName("ITEM_TYPE_ULTRA_POKEBALL")]
+        UltraPokeball = 3,
         [pbr::OriginalName("ITEM_TYPE_REVIVE")]
-        Revive = 3,
+        Revive = 201,
         [pbr::OriginalName("ITEM_TYPE_MAP")]
         Map = 4,
         [pbr::OriginalName("ITEM_TYPE_BATTLE")]
@@ -1820,11 +1822,17 @@ namespace AllEnum
         [pbr::OriginalName("ITEM_TYPE_INCUBATOR")]
         Incubator = 9,
         [pbr::OriginalName("ITEM_TYPE_INCENSE")]
-        Incense = 10,
+        Incense = 401,
         [pbr::OriginalName("ITEM_TYPE_XP_BOOST")]
         XpBoost = 11,
         [pbr::OriginalName("ITEM_TYPE_INVENTORY_UPGRADE")]
         InventoryUpgrade = 12,
+        [pbr::OriginalName("ITEM_TYPE_RAZZ_BERRY")]
+        Razzberry = 701,
+        [pbr::OriginalName("ITEM_TYPE_LURE_MODULE")]
+        LureModule = 501,
+        [pbr::OriginalName("ITEM_TYPE_HYPER_POTION")]
+        HyperPotion = 103,
     }
 
     public enum ItemCategory

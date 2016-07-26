@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AllEnum;
 using bhelper;
 using bhelper.Classes;
 using PokemonGo.RocketAPI.Enums;
@@ -41,10 +42,38 @@ namespace bLogic
                 if (profileResponse.Profile.Currency.ToArray()[0].Amount > 0)
                     bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Pokecoins: " + profileResponse.Profile.Currency.ToArray()[0].Amount);
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Stardust: " + profileResponse.Profile.Currency.ToArray()[1].Amount);
+                bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Registered since: " + hero.TimeStarted);
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Distance traveled: " + String.Format("{0:0.00} km", hero.TotalKmWalked));
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Latitude: " + String.Format("{0:0.00} degree", hero.ClientSettings.DefaultLatitude));
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Longitude: " + String.Format("{0:0.00} degree", hero.ClientSettings.DefaultLongitude));
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "+--------------------------------------------+");
+            }
+            catch (Exception crap)
+            {
+                bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "Info.StartUpPrint Exception: " + crap.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool PrintInventory(GetInventoryResponse inventoryResponse)
+        {
+            try
+            {
+                if (inventoryResponse.Success)
+                {
+                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "+-------------- inventory info ---------------+");
+                    foreach (var tmpItem in inventoryResponse.InventoryDelta.InventoryItems)
+                    {
+                        if (tmpItem.InventoryItemData.Item != null)
+                        {
+                            bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, tmpItem.InventoryItemData.Item.Count + "x " + tmpItem.InventoryItemData.Item.Item_.ToString());
+                        }
+                        
+                    }
+                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "+----------------------------------------------+");
+                }
             }
             catch (Exception crap)
             {

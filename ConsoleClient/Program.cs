@@ -42,8 +42,10 @@ namespace PokemonGo.RocketAPI.Console
                 foreach (var v in stats)
                     if (v != null)
                         _hero.TotalKmWalked = v.KmWalked;
+
                 bLogic.Info.PrintStartUp(_hero, profile);
-               
+                bLogic.Info.PrintInventory(inventory);
+
                 if (_hero.ClientSettings.TransferType == "leaveStrongest")
                     await bLogic.Pokemon.TransferAllButStrongestUnwantedPokemon(_hero);
                 else if (_hero.ClientSettings.TransferType == "all")
@@ -57,7 +59,7 @@ namespace PokemonGo.RocketAPI.Console
                 if (_hero.ClientSettings.EvolveAllGivenPokemons)
                     await bLogic.Pokemon.EvolveAllGivenPokemons(_hero, pokemons);
                 if (_hero.ClientSettings.Recycler)
-                    _hero.Client.RecycleItems(_hero.Client);
+                    await _hero.Client.RecycleItems(_hero.Client);
 
                 await Task.Delay(5000);
                 //time for some gui updates
