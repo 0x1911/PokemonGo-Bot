@@ -61,7 +61,6 @@ namespace PokemonGo.RocketAPI.GUI
                 
                 await Task.Delay(5000);
                 //time for some gui updates
-                bLogic.Info.PrintLevel(_hero);
                 UpdateFormTitle();
 
 

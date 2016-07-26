@@ -23,11 +23,7 @@ namespace bLogic
         {
             return hero.TotalExperience;
         }
-
-        public static void PrintMostValuablePokemons(Hero hero)
-        {
-        }
-
+        
         public static bool PrintStartUp(Hero hero, GetPlayerResponse profileResponse)
         {
             try
@@ -57,22 +53,38 @@ namespace bLogic
             return true;
         }
 
-        public static bool PrintInventory(GetInventoryResponse inventoryResponse)
+        public static bool PrintInventory(GetInventoryResponse inventoryResponse, GetPlayerResponse profileResponse)
         {
+            int currentItemCount = 1; // lets start with 1 as the Camera item is most likely not counted TODO: check if this is indeed the case!
+            int pokemonOwned = 0;
+            int eggsOwned = 0;
+
             try
             {
                 if (inventoryResponse.Success)
                 {
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "+-------------- inventory info ---------------+");
                     foreach (var tmpItem in inventoryResponse.InventoryDelta.InventoryItems)
                     {
                         if (tmpItem.InventoryItemData.Item != null)
                         {
-                            bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, tmpItem.InventoryItemData.Item.Count + "x " + tmpItem.InventoryItemData.Item.Item_.ToString());
+                            bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " " + tmpItem.InventoryItemData.Item.Count + "x " + tmpItem.InventoryItemData.Item.Item_.ToString());
+                            currentItemCount += tmpItem.InventoryItemData.Item.Count;
                         }
-                        
                     }
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "+----------------------------------------------+");
+                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, "We have " + currentItemCount + "/ " + profileResponse.Profile.ItemStorage + " items in our backpack.");
+                    foreach (var tmpItem in inventoryResponse.InventoryDelta.InventoryItems)
+                    {
+                        if (tmpItem.InventoryItemData.Pokemon != null)
+                        {
+                            if (tmpItem.InventoryItemData.Pokemon.IsEgg)
+                            {
+                                eggsOwned++;
+                            }
+
+                            pokemonOwned++;
+                        }
+                    }
+                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, "We own " + pokemonOwned + " pokemon, " + eggsOwned + " of them are eggs. " + profileResponse.Profile.PokeStorage + " total pokemon storage");
                 }
             }
             catch (Exception crap)
@@ -84,22 +96,40 @@ namespace bLogic
             return true;
         }
 
-        //todo: remove/replace the bool below
-        public static bool PerfectionListPrinted;
+        public static async Task PrintMostValueablePokemonsOwned(Hero hero)
+        {
+            var inventory = await hero.Client.GetInventory();
+            var pokemons = inventory.InventoryDelta.InventoryItems
+                .Select(i => i.InventoryItemData?.Pokemon)
+                .Where(p => p != null && p?.PokemonId > 0)
+                .ToArray();
+
+            //clean up so we dont end up with dupes
+            hero.OwnedPokemons.Clear();
+            //readd our knowledge
+            foreach (var tmpPokemon in pokemons)
+            {
+                bhelper.Classes.Pokemon tmpOwnedPokemon = new bhelper.Classes.Pokemon(tmpPokemon, Game.CalculatePokemonPerfection(tmpPokemon));
+
+                hero.OwnedPokemons.Add(tmpOwnedPokemon);
+            }
+            //iterate through it
+            var sortedList = hero.OwnedPokemons.OrderByDescending(q => q.PerfectionPercent).ToList();
+            Console.WriteLine("+-----------------+-----------+---------------+");
+            Console.WriteLine("| Name            | Perfect % | Combat Points |");
+            Console.WriteLine("+-----------------+-----------+---------------+");
+            foreach (var pokemon in sortedList)
+            {
+                Console.WriteLine("| {0} | {1} | {2} |", pokemon.Pokemondata.PokemonId.ToString().PadRight(15), String.Format("{0:0.00} %", pokemon.PerfectionPercent).PadRight(9), (pokemon.Pokemondata.Cp + " CP").ToString().PadRight(13));
+            }
+        }
         /// <summary>
         /// Print a level related event to RichTextBox or console log
         /// </summary>
         /// <param name="client"></param>
         /// <returns></returns>
-        public static async Task PrintLevel(Hero hero)
+        public static async Task PrintLevel(Hero hero, GetInventoryResponse inventory)
         {
-            if (!PerfectionListPrinted)
-            {
-                PerfectionListPrinted = true;
-                await bLogic.Pokemon.GetMostValueablePokemonsOwned(hero);
-            }
-
-            var inventory = await hero.Client.GetInventory();
             var stats = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PlayerStats).ToArray();
             foreach (var v in stats)
                 if (v != null)

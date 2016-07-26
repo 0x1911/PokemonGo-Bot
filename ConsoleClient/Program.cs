@@ -23,8 +23,9 @@ namespace PokemonGo.RocketAPI.Console
 
             try
             {
+                // check if we are on the newest version
                 bhelper.Main.CheckVersion(Assembly.GetExecutingAssembly().GetName(), true);
-
+                
                 if (_hero.ClientSettings.AuthType == AuthType.Ptc)
                     await _hero.Client.DoPtcLogin(_hero.ClientSettings.PtcUsername, _hero.ClientSettings.PtcPassword);
                 else if (_hero.ClientSettings.AuthType == AuthType.Google)
@@ -32,8 +33,8 @@ namespace PokemonGo.RocketAPI.Console
 
                 await _hero.Client.SetServer();
                 var profile = await _hero.Client.GetProfile();
-                var settings = await _hero.Client.GetSettings();
-                var mapObjects = await _hero.Client.GetMapObjects();
+             //   var settings = await _hero.Client.GetSettings();
+             //   var mapObjects = await _hero.Client.GetMapObjects();
                 var inventory = await _hero.Client.GetInventory();
                 var pokemons =
                     inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon)
@@ -43,33 +44,50 @@ namespace PokemonGo.RocketAPI.Console
                     if (v != null)
                         _hero.TotalKmWalked = v.KmWalked;
 
-                bLogic.Info.PrintStartUp(_hero, profile);
-                bLogic.Info.PrintInventory(inventory);
+                // refresh hero data
+                bhelper.Game.RefreshBackPackStatus(_hero, profile.Profile, inventory);
 
-                if (_hero.ClientSettings.TransferType == "leaveStrongest")
-                    await bLogic.Pokemon.TransferAllButStrongestUnwantedPokemon(_hero);
-                else if (_hero.ClientSettings.TransferType == "all")
-                    await bLogic.Pokemon.TransferAllGivenPokemons(_hero, pokemons);
-                else if (_hero.ClientSettings.TransferType == "duplicate")
-                    await bLogic.Pokemon.TransferDuplicatePokemon(_hero);
-                else if (_hero.ClientSettings.TransferType == "cp")
-                    await bLogic.Pokemon.TransferAllWeakPokemon(_hero);
-                else
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, $"[{DateTime.Now.ToString("HH:mm:ss")}] Transfering pokemon disabled");
+                //print out some info
+                bLogic.Info.PrintStartUp(_hero, profile);
+                bLogic.Info.PrintInventory(inventory, profile);
+                bLogic.Info.PrintLevel(_hero, inventory);
+                bLogic.Info.PrintMostValueablePokemonsOwned(_hero);
+
+
+                switch (_hero.ClientSettings.TransferType)
+                {
+                    case "leaveStrongest":
+                        await bLogic.Pokemon.TransferAllButStrongestUnwantedPokemon(_hero);
+                        break;
+                    case "all":
+                        await bLogic.Pokemon.TransferAllGivenPokemons(_hero, pokemons);
+                        break;
+                    case "duplicate":
+                        await bLogic.Pokemon.TransferDuplicatePokemon(_hero);
+                        break;
+                    case "cp":
+                        await bLogic.Pokemon.TransferAllWeakPokemon(_hero);
+                        break;
+                    default:
+                        bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, $"[{DateTime.Now.ToString("HH:mm:ss")}] Transfering pokemon disabled");
+                        break;
+                }
+
                 if (_hero.ClientSettings.EvolveAllGivenPokemons)
                     await bLogic.Pokemon.EvolveAllGivenPokemons(_hero, pokemons);
-                if (_hero.ClientSettings.Recycler)
-                    await _hero.Client.RecycleItems(_hero.Client);
+                
 
                 await Task.Delay(5000);
+
                 //time for some gui updates
-                bLogic.Info.PrintLevel(_hero);
                 RefreshConsoleTitle(profile.Profile.Username, _hero);
 
                 if (_hero.ClientSettings.EggHatchedOutput)
                     bLogic.Item.CheckEggsHatched(_hero);
+
                 if (_hero.ClientSettings.UseLuckyEggMode == "always")
                     _hero.Client.UseLuckyEgg(_hero.Client);
+
                 await bLogic.Pokemon.ExecuteFarmingPokestopsAndPokemons(_hero);
                 _hero.ClientSettings.DefaultLatitude = Client.GetLatitude(true);
                 _hero.ClientSettings.DefaultLongitude = Client.GetLongitude(true);

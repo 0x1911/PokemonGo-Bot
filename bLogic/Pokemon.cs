@@ -25,47 +25,9 @@ namespace bLogic
         public static int TotalExperience = 0;
         public static int TotalPokemon = 0;
 
-        /// <summary>
-        /// Calculate pokemon perfection in percent
-        /// </summary>
-        /// <param name="poke"></param>
-        /// <returns>30</returns>
-        public static float CalculatePokemonPerfection(PokemonData poke)
-        {
-            return (((poke.IndividualAttack * 2 + poke.IndividualDefense + poke.IndividualStamina) / 60f) * 100f);
-        }
+        
 
-
-        public static async Task GetMostValueablePokemonsOwned(Hero hero)
-        {
-            var inventory = await hero.Client.GetInventory();
-            var pokemons = inventory.InventoryDelta.InventoryItems
-                .Select(i => i.InventoryItemData?.Pokemon)
-                .Where(p => p != null && p?.PokemonId > 0)
-                .ToArray();
-
-            //clean up so we dont end up with dupes
-            hero.OwnedPokemons.Clear();
-            //readd our knowledge
-            foreach (var tmpPokemon in pokemons)
-            {
-                bhelper.Classes.Pokemon tmpOwnedPokemon = new bhelper.Classes.Pokemon(tmpPokemon,
-                    CalculatePokemonPerfection(tmpPokemon));
-
-                hero.OwnedPokemons.Add(tmpOwnedPokemon);
-            }
-            //iterate through it TODO: remove debug stuff
-            Console.WriteLine(" We do own {0} pokemon in total", hero.OwnedPokemons.Count+1);
-            var sortedList = hero.OwnedPokemons.OrderByDescending(q => q.PerfectionPercent).ToList();
-            Console.WriteLine("| Name            | Perfect % | Combat Points |");
-            Console.WriteLine("+-----------------+-----------+---------------+");
-            foreach (var pokemon in sortedList)
-            {
-                //String.Format("{0:0.00} degree", hero.ClientSettings.DefaultLongitude)
-                Console.WriteLine("| {0} | {1} | {2} |", pokemon.Pokemondata.PokemonId.ToString().PadRight(15), String.Format("{0:0.00} %", pokemon.PerfectionPercent).PadRight(9), (pokemon.Pokemondata.Cp + " CP").ToString().PadRight(13));
-            }
-            Console.WriteLine("+-----------------+-----------+---------------+");
-        }
+        
 
 
         public static async Task EvolveAllGivenPokemons(Hero hero, IEnumerable<PokemonData> pokemonToEvolve)
@@ -94,7 +56,7 @@ namespace bLogic
 
                     if (evolvePokemonOutProto.Result == 1)
                     {
-                        bhelper.Main.ColoredConsoleWrite(ConsoleColor.Cyan,
+                        Main.ColoredConsoleWrite(ConsoleColor.Cyan,
                             $"[{DateTime.Now.ToString("HH:mm:ss")}] Evolved {pokemon.PokemonId} successfully for {evolvePokemonOutProto.ExpAwarded}xp");
 
                         countOfEvolvedUnits++;
@@ -112,12 +74,13 @@ namespace bLogic
                     }
                 } while (evolvePokemonOutProto.Result == 1);
                 if (countOfEvolvedUnits > 0)
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.Cyan,
+                    Main.ColoredConsoleWrite(ConsoleColor.Cyan,
                         $"[{DateTime.Now.ToString("HH:mm:ss")}] Evolved {countOfEvolvedUnits} pieces of {pokemon.PokemonId} for {xpCount}xp");
 
                 await Task.Delay(3000);
             }
         }
+
         
 
         /// <summary>
@@ -152,7 +115,7 @@ namespace bLogic
 
                 if (!CatchOnlyThesePokemon.Contains(pokemon.PokemonId) && hero.ClientSettings.CatchOnlySpecific)
                 {
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkYellow, $"[{DateTime.Now.ToString("HH:mm:ss")}] We didnt try to catch {pokemonName} because it is filtered");
+                    Main.ColoredConsoleWrite(ConsoleColor.DarkYellow, $"[{DateTime.Now.ToString("HH:mm:ss")}] We didnt try to catch {pokemonName} because it is filtered");
                     return;
                 }
                 var update = await hero.Client.UpdatePlayerLocation(pokemon.Latitude, pokemon.Longitude);
@@ -171,13 +134,13 @@ namespace bLogic
                 } while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed || caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
                 {
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.Green, $"[{DateTime.Now.ToString("HH:mm:ss")}] We caught a {pokemonName} with {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} CP");
+                    Main.ColoredConsoleWrite(ConsoleColor.Green, $"[{DateTime.Now.ToString("HH:mm:ss")}] We caught a {pokemonName} with {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} CP");
                     foreach (int xp in caughtPokemonResponse.Scores.Xp)
                         TotalExperience += xp;
                     TotalPokemon += 1;
                 }
                 else
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.Red, $"[{DateTime.Now.ToString("HH:mm:ss")}] {pokemonName} with {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} CP got away..");
+                    Main.ColoredConsoleWrite(ConsoleColor.Red, $"[{DateTime.Now.ToString("HH:mm:ss")}] {pokemonName} with {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} CP got away..");
                 
                 switch (hero.ClientSettings.TransferType)
                 {
@@ -194,7 +157,7 @@ namespace bLogic
                         await TransferAllWeakPokemon(hero);
                         break;
                 } 
-
+                
                 await Task.Delay(3000);
             }
         }
@@ -254,7 +217,7 @@ namespace bLogic
                         .ToList();
 
                 //ColoredConsoleWrite(ConsoleColor.White, $"[{DateTime.Now.ToString("HH:mm:ss")}] Grinding {unwantedPokemon.Count} pokemons of type {unwantedPokemonType}");
-                await bLogic.Pokemon.TransferAllGivenPokemons(hero, unwantedPokemon);
+                await Pokemon.TransferAllGivenPokemons(hero, unwantedPokemon);
             }
 
             //ColoredConsoleWrite(ConsoleColor.White, $"[{DateTime.Now.ToString("HH:mm:ss")}] Finished grinding all the meat");
@@ -274,7 +237,7 @@ namespace bLogic
 
                 StringWriter PokeStopOutput = new StringWriter();
                 PokeStopOutput.Write($"[{DateTime.Now.ToString("HH:mm:ss")}] ");
-                if (fortInfo.Name != string.Empty)
+                if (fortInfo.Name != String.Empty)
                     PokeStopOutput.Write("PokeStop: " + fortInfo.Name);
                 if (fortSearch.ExperienceAwarded != 0)
                     PokeStopOutput.Write($", XP: {fortSearch.ExperienceAwarded}");
@@ -282,9 +245,25 @@ namespace bLogic
                     PokeStopOutput.Write($", Gems: {fortSearch.GemsAwarded}");
                 if (fortSearch.PokemonDataEgg != null)
                     PokeStopOutput.Write($", Eggs: {fortSearch.PokemonDataEgg}");
-                if (bLogic.Item.GetFriendlyItemsString(fortSearch.ItemsAwarded) != string.Empty)
-                    PokeStopOutput.Write($", Items: {bLogic.Item.GetFriendlyItemsString(fortSearch.ItemsAwarded)} ");
-                bhelper.Main.ColoredConsoleWrite(ConsoleColor.Cyan, PokeStopOutput.ToString());
+
+                string FriendlyItems = Item.GetFriendlyItemsString(fortSearch.ItemsAwarded, _hero);
+                if (FriendlyItems != string.Empty)
+                {
+                    PokeStopOutput.Write($", Items:" + FriendlyItems);
+                }
+
+                Main.ColoredConsoleWrite(ConsoleColor.Cyan, PokeStopOutput.ToString());
+
+                if (_hero.Backpack.SlotsUsed >= _hero.Backpack.SlotsMax)
+                {
+                    await _hero.Client.RecycleItems(_hero.Client);
+
+                    //refresh our bp knowledge
+                    var profile = await _hero.Client.GetProfile();
+                    var inventory = await _hero.Client.GetInventory();
+                    bhelper.Game.RefreshBackPackStatus(_hero, profile.Profile, inventory);
+                }
+               
 
                 if (fortSearch.ExperienceAwarded != 0)
                     TotalExperience += (fortSearch.ExperienceAwarded);
@@ -339,20 +318,20 @@ namespace bLogic
 
                 //var unwantedPokemon = pokemonOfDesiredType.Skip(1) // keep the strongest one for potential battle-evolving
                 //                                          .ToList();
-                bhelper.Main.ColoredConsoleWrite(ConsoleColor.Gray, $"[{DateTime.Now.ToString("HH:mm:ss")}] Grinding {pokemonToDiscard.Count} pokemon below {hero.ClientSettings.TransferCPThreshold} CP.");
+                Main.ColoredConsoleWrite(ConsoleColor.Gray, $"[{DateTime.Now.ToString("HH:mm:ss")}] Grinding {pokemonToDiscard.Count} pokemon below {hero.ClientSettings.TransferCPThreshold} CP.");
                 await TransferAllGivenPokemons(hero, pokemonToDiscard);
 
             }
 
-            bhelper.Main.ColoredConsoleWrite(ConsoleColor.Gray, $"[{DateTime.Now.ToString("HH:mm:ss")}] Finished grinding all the meat");
+            Main.ColoredConsoleWrite(ConsoleColor.Gray, $"[{DateTime.Now.ToString("HH:mm:ss")}] Finished grinding all the meat");
         }
 
         public static async Task TransferAllGivenPokemons(Hero hero, IEnumerable<PokemonData> unwantedPokemons, float keepPerfectPokemonLimit = 80.0f)
         {
             foreach (var pokemon in unwantedPokemons)
             {
-                if (Perfect(pokemon) >= keepPerfectPokemonLimit) continue;
-                bhelper.Main.ColoredConsoleWrite(ConsoleColor.White, $"[{DateTime.Now.ToString("HH:mm:ss")}] Pokemon {pokemon.PokemonId} with {pokemon.Cp} CP has IV percent less than {keepPerfectPokemonLimit}%");
+                if (Game.CalculatePokemonPerfection(pokemon) >= keepPerfectPokemonLimit) continue;
+                Main.ColoredConsoleWrite(ConsoleColor.White, $"[{DateTime.Now.ToString("HH:mm:ss")}] Pokemon {pokemon.PokemonId} with {pokemon.Cp} CP has IV percent less than {keepPerfectPokemonLimit}%");
 
                 if (pokemon.Favorite == 0)
                 {
@@ -373,13 +352,13 @@ namespace bLogic
                         pokemonName = Convert.ToString(pokemon.PokemonId);
                     if (transferPokemonResponse.Status == 1)
                     {
-                        bhelper.Main.ColoredConsoleWrite(ConsoleColor.Magenta, $"[{DateTime.Now.ToString("HH:mm:ss")}] Transferred {pokemonName} with {pokemon.Cp} CP");
+                        Main.ColoredConsoleWrite(ConsoleColor.Magenta, $"[{DateTime.Now.ToString("HH:mm:ss")}] Transferred {pokemonName} with {pokemon.Cp} CP");
                     }
                     else
                     {
                         var status = transferPokemonResponse.Status;
 
-                        bhelper.Main.ColoredConsoleWrite(ConsoleColor.Red, $"[{DateTime.Now.ToString("HH:mm:ss")}] Somehow failed to transfer {pokemonName} with {pokemon.Cp} CP. " +
+                        Main.ColoredConsoleWrite(ConsoleColor.Red, $"[{DateTime.Now.ToString("HH:mm:ss")}] Somehow failed to transfer {pokemonName} with {pokemon.Cp} CP. " +
                                                  $"ReleasePokemonOutProto.Status was {status}");
                     }
 
@@ -417,19 +396,15 @@ namespace bLogic
                             pokemonName = Convert.ToString((PokemonId_german)(int)tmpDupePokemon.PokemonId);
                         else
                             pokemonName = Convert.ToString(tmpDupePokemon.PokemonId);
-                        bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGreen,
-                            $"[{DateTime.Now.ToString("HH:mm:ss")}] Transferred " + pokemonName + ": " + (tmpDupePokemon.Cp + " CP ").ToString().PadRight(7) + String.Format("| {0:0.00}% perfection", CalculatePokemonPerfection(tmpDupePokemon)));
-                        bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGreen,
-                            $"[{DateTime.Now.ToString("HH:mm:ss")}] -We possess " + pokemonName + ": " + (DupedPokemon.ElementAt(i).Last().value.Cp + " CP").ToString().PadRight(7) + String.Format("| {0:0.00}% perfection", CalculatePokemonPerfection(DupedPokemon.ElementAt(i).Last().value)) );
+                        Main.ColoredConsoleWrite(ConsoleColor.DarkGreen,
+                            $"[{DateTime.Now.ToString("HH:mm:ss")}] Transferred " + pokemonName + ": " + (tmpDupePokemon.Cp + " CP ").ToString().PadRight(7) + String.Format("| {0:0.00}% perfection", Game.CalculatePokemonPerfection(tmpDupePokemon)));
+                        Main.ColoredConsoleWrite(ConsoleColor.DarkGreen,
+                            $"[{DateTime.Now.ToString("HH:mm:ss")}] -We possess " + pokemonName + ": " + (DupedPokemon.ElementAt(i).Last().value.Cp + " CP").ToString().PadRight(7) + String.Format("| {0:0.00}% perfection", Game.CalculatePokemonPerfection(DupedPokemon.ElementAt(i).Last().value)) );
                     }
                 }
             }
         }
 
-
-        public static float Perfect(PokemonData poke)
-        {
-            return ((float)(poke.IndividualAttack + poke.IndividualDefense + poke.IndividualStamina) / (3.0f * 15.0f)) * 100.0f;
-        }
+        
     }
 }

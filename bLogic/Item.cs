@@ -31,12 +31,17 @@ namespace bLogic
             CheckEggsHatched(hero);
         }
 
-        public static string GetFriendlyItemsString(IEnumerable<FortSearchResponse.Types.ItemAward> items)
+        public static string GetFriendlyItemsString(IEnumerable<FortSearchResponse.Types.ItemAward> items, Hero hero)
         {
             var enumerable = items as IList<FortSearchResponse.Types.ItemAward> ?? items.ToList();
 
             if (!enumerable.Any())
                 return string.Empty;
+
+            foreach (var tmpListItem in enumerable)
+            {
+                hero.Backpack.SlotsUsed += tmpListItem.ItemCount;
+            }
 
             return enumerable.GroupBy(i => i.ItemId)
                     .Select(kvp => new { ItemName = kvp.Key.ToString().Substring(4), Amount = kvp.Sum(x => x.ItemCount) })

@@ -1799,6 +1799,22 @@ namespace AllEnum
 
     public enum ItemType
     {
+        /*26072016 out of decompiled pokemonGO *.apk
+        ITEM_TYPE_NONE
+        ITEM_TYPE_POKEBALL
+        ITEM_TYPE_POTION
+        ITEM_TYPE_REVIVE
+        ITEM_TYPE_MAP
+        ITEM_TYPE_BATTLE
+        ITEM_TYPE_FOOD
+        ITEM_TYPE_CAMERA
+        ITEM_TYPE_DISK
+        ITEM_TYPE_INCUBATOR
+        ITEM_TYPE_INCENSE
+        ITEM_TYPE_XP_BOOST
+        ITEM_TYPE_INVENTORY_UPGRADE
+        */
+
         [pbr::OriginalName("ITEM_TYPE_NONE")]
         None = 0,
         [pbr::OriginalName("ITEM_TYPE_POKEBALL")]
@@ -1820,7 +1836,9 @@ namespace AllEnum
         [pbr::OriginalName("ITEM_TYPE_DISK")]
         Disk = 8,
         [pbr::OriginalName("ITEM_TYPE_INCUBATOR")]
-        Incubator = 9,
+        IncubatorUnbreakable = 901,
+        [pbr::OriginalName("ITEM_TYPE_INCUBATOR")]
+        Incubator = 902,
         [pbr::OriginalName("ITEM_TYPE_INCENSE")]
         Incense = 401,
         [pbr::OriginalName("ITEM_TYPE_XP_BOOST")]
@@ -1833,6 +1851,8 @@ namespace AllEnum
         LureModule = 501,
         [pbr::OriginalName("ITEM_TYPE_HYPER_POTION")]
         HyperPotion = 103,
+        [pbr::OriginalName("ITEM_TYPE_TOP_POTION")]
+        TopPotion = 104,
     }
 
     public enum ItemCategory

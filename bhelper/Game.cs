@@ -1,7 +1,70 @@
-﻿namespace bhelper
+﻿using System;
+using bhelper.Classes;
+using PokemonGo.RocketAPI.GeneratedCode;
+
+namespace bhelper
 {
     public class Game
     {
+        /// <summary>
+        /// Calculate pokemon perfection in percent
+        /// </summary>
+        /// <param name="poke"></param>
+        /// <returns>30</returns>
+        public static float CalculatePokemonPerfection(PokemonData poke)
+        {
+            return (((poke.IndividualAttack * 2 + poke.IndividualDefense + poke.IndividualStamina) / 60f) * 100f);
+        }
+
+
+        public static bool RefreshPokedexStatus(GetInventoryResponse inventoryResponse, GetPlayerResponse profileResponse, Hero hero)
+        {
+
+
+            return false;
+        }
+
+        /// <summary>
+        /// Refresh Hero data with the current status of our backpack
+        /// </summary>
+        /// <param name="inventoryResponse"></param>
+        /// <param name="profileResponse"></param>
+        /// <param name="hero"></param>
+        /// <returns>true if valid data has been filted and Hero got refreshed</returns>
+        public static bool RefreshBackPackStatus(Hero hero, Profile profile, GetInventoryResponse inventory)
+        {
+            int currentItemCount = 1; // lets start with 1 as the Camera item is most likely not counted TODO: check if this is indeed the case!
+
+            try
+            {
+                if (!inventory.Success)
+                    return false;
+                
+
+                    foreach (var tmpItem in inventory.InventoryDelta.InventoryItems)
+                    {
+                        if (tmpItem.InventoryItemData.Item != null)
+                        {
+                            currentItemCount += tmpItem.InventoryItemData.Item.Count;
+                        }
+                    }
+
+                    //did we end up with valid data?
+                if (currentItemCount <= 1 || profile.ItemStorage <= 0)
+                    return false;
+
+                    //refresh our hero data
+                    hero.Backpack.SlotsMax = profile.ItemStorage;
+                    hero.Backpack.SlotsUsed = currentItemCount;
+
+                return true;
+            }
+            catch (Exception crap)
+            {
+                bhelper.Main.ColoredConsoleWrite(ConsoleColor.Red, "Game.RefreshBackPackStatus Exception: " + crap.Message);
+                return false;
+            }
+        }
         /// <summary>
         ///     returns xp needed to the next level
         /// </summary>
