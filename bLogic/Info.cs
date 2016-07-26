@@ -67,11 +67,11 @@ namespace bLogic
                     {
                         if (tmpItem.InventoryItemData.Item != null)
                         {
-                            bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " " + tmpItem.InventoryItemData.Item.Count + "x " + tmpItem.InventoryItemData.Item.Item_.ToString());
+                            bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, "  " + tmpItem.InventoryItemData.Item.Count + "x " + tmpItem.InventoryItemData.Item.Item_.ToString());
                             currentItemCount += tmpItem.InventoryItemData.Item.Count;
                         }
                     }
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, "We have " + currentItemCount + "/ " + profileResponse.Profile.ItemStorage + " items in our backpack.");
+                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, "  " + currentItemCount + "/ " + profileResponse.Profile.ItemStorage + " items in our backpack.");
                     foreach (var tmpItem in inventoryResponse.InventoryDelta.InventoryItems)
                     {
                         if (tmpItem.InventoryItemData.Pokemon != null)
@@ -84,7 +84,7 @@ namespace bLogic
                             pokemonOwned++;
                         }
                     }
-                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, "We own " + pokemonOwned + " pokemon, " + eggsOwned + " of them are eggs. " + profileResponse.Profile.PokeStorage + " total pokemon storage");
+                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, "  We own " + pokemonOwned + " pokemon, " + eggsOwned + " of them are eggs. " + profileResponse.Profile.PokeStorage + " total pokemon storage");
                 }
             }
             catch (Exception crap)

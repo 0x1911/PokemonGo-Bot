@@ -271,7 +271,7 @@ namespace bLogic
                 string FriendlyItems = Item.GetFriendlyItemsString(fortSearch.ItemsAwarded, _hero);
                 if (FriendlyItems != string.Empty)
                 {
-                    PokeStopOutput.Write(" | Items: " + FriendlyItems);
+                    PokeStopOutput.Write(" | " + FriendlyItems);
                 }
 
                 Main.ColoredConsoleWrite(ConsoleColor.Cyan, PokeStopOutput.ToString());
