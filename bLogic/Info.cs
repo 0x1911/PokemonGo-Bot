@@ -28,7 +28,7 @@ namespace bLogic
         {
             try
             {
-                bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "+-------------- account info ---------------+");
+                bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "+-------------- account info -----------------+");
                 if (hero.ClientSettings.AuthType == AuthType.Ptc)
                 {
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " PTC Name: " + hero.ClientSettings.PtcUsername);
@@ -42,7 +42,6 @@ namespace bLogic
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Distance traveled: " + String.Format("{0:0.00} km", hero.TotalKmWalked));
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Latitude: " + String.Format("{0:0.00} degree", hero.ClientSettings.DefaultLatitude));
                 bhelper.Main.ColoredConsoleWrite(ConsoleColor.DarkGray, " Longitude: " + String.Format("{0:0.00} degree", hero.ClientSettings.DefaultLongitude));
-                bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "+--------------------------------------------+");
             }
             catch (Exception crap)
             {
@@ -63,6 +62,7 @@ namespace bLogic
             {
                 if (inventoryResponse.Success)
                 {
+                    bhelper.Main.ColoredConsoleWrite(ConsoleColor.Yellow, "+-------------- inventory info ---------------+");
                     foreach (var tmpItem in inventoryResponse.InventoryDelta.InventoryItems)
                     {
                         if (tmpItem.InventoryItemData.Item != null)

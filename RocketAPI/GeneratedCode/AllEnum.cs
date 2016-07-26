@@ -1825,6 +1825,8 @@ namespace AllEnum
         UltraPokeball = 3,
         [pbr::OriginalName("ITEM_TYPE_REVIVE")]
         Revive = 201,
+        [pbr::OriginalName("ITEM_MAX_REVIVE")]
+        MaxRevive = 202,
         [pbr::OriginalName("ITEM_TYPE_MAP")]
         Map = 4,
         [pbr::OriginalName("ITEM_TYPE_BATTLE")]
@@ -1832,27 +1834,35 @@ namespace AllEnum
         [pbr::OriginalName("ITEM_TYPE_FOOD")]
         Food = 6,
         [pbr::OriginalName("ITEM_TYPE_CAMERA")]
-        Camera = 7,
-        [pbr::OriginalName("ITEM_TYPE_DISK")]
-        Disk = 8,
-        [pbr::OriginalName("ITEM_TYPE_INCUBATOR")]
-        IncubatorUnbreakable = 901,
-        [pbr::OriginalName("ITEM_TYPE_INCUBATOR")]
+        Camera = 801,
+        [pbr::OriginalName("ITEM_TROY_DISK")]
+        Disk = 501,
+        [pbr::OriginalName("ITEM_INCUBATOR_BASIC_UNLIMITED")]
+        IncubatorUnbreakableOrCamera = 901,
+        [pbr::OriginalName("ITEM_INCUBATOR_BASIC")]
         Incubator = 902,
         [pbr::OriginalName("ITEM_TYPE_INCENSE")]
         Incense = 401,
-        [pbr::OriginalName("ITEM_TYPE_XP_BOOST")]
-        XpBoost = 11,
+        [pbr::OriginalName("ITEM_LUCKY_EGG")]
+        XpBoost = 301,
         [pbr::OriginalName("ITEM_TYPE_INVENTORY_UPGRADE")]
         InventoryUpgrade = 12,
         [pbr::OriginalName("ITEM_TYPE_RAZZ_BERRY")]
         Razzberry = 701,
         [pbr::OriginalName("ITEM_TYPE_LURE_MODULE")]
         LureModule = 501,
+        [pbr::OriginalName("ITEM_TYPE_POTION")]
+        Potion = 101,
+        [pbr::OriginalName("ITEM_TYPE_SUPER_POTION")]
+        SuperPotion = 102,
         [pbr::OriginalName("ITEM_TYPE_HYPER_POTION")]
         HyperPotion = 103,
         [pbr::OriginalName("ITEM_TYPE_TOP_POTION")]
         TopPotion = 104,
+        [pbr::OriginalName("ITEM_POKEMON_STORAGE_UPGRADE")]
+        PokemonStorageUpgrade = 1001,
+        [pbr::OriginalName("ITEM_ITEM_STORAGE_UPGRADE")]
+        ItemStorageUpgrade = 1002,
     }
 
     public enum ItemCategory
